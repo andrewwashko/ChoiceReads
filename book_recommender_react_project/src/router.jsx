@@ -1,7 +1,7 @@
 import { createHashRouter, createBrowserRouter } from 'react-router-dom'
 import App from './App'
-import { LoginPage } from './pages/LoginPage'
 import { MainPage } from './pages/MainPage'
+import { AuthPage } from './pages/AuthPage'
 
 const Router = createHashRouter([
   {
@@ -10,12 +10,12 @@ const Router = createHashRouter([
     children: [
       {
         index: true,
-        element: <MainPage />
+        element: <AuthPage />
       },
       {
-        path: "/login/",
-        element: <LoginPage />
-      },
+        path: "main/",
+        element: <MainPage />,
+      }
     ]
   }
 ])

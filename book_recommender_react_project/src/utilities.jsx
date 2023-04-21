@@ -33,9 +33,10 @@ export const signOut = async () => {
 };
 
 /** OpenAI API */
-export const recommendations = async (quote) => {
+export const recommendations = async (quote, user_email) => {
   let response = await axios.post('/api/recommendations/', {
-    "quote" : quote
+    "quote" : quote,
+    "user_email" : user_email
   })
   // console.log(response.data)
   return response

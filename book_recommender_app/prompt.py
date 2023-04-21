@@ -9,6 +9,6 @@ messages = [
     },
     {
         "role": "user",
-        "content": "After 'end_response', the second, isolated response will have ONLY a python list of key:value objects for EACH book recommendation. Include no text outside the objects, and do not deviate from this formatting: { 'title' : 'title of book', 'author': 'author of book', 'date_published': 'date of book publication', 'summary': 'two to three sentence summary of the book and its themes/writing style' }"
+        "content": "After 'end_response', the second, isolated response will have ONLY a python list of key:value objects for EACH book recommendation. Include no text outside the objects, surround each key and value in double-quotes, and do not deviate from this formatting. : { title : title of book, author: author of book, date_published: date of book publication, summary: two to three sentence summary of the book and its themes/writing style }"
     }
 ]

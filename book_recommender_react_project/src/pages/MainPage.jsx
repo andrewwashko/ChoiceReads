@@ -4,13 +4,13 @@ import { SignOutBar } from '../components/SignOutBar'
 import { recommendations } from '../utilities';
 
 export const MainPage = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext)
   const [result, setResult] = useState("")
   const [quote, setQuote] = useState("")
   
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const result = await recommendations(quote)
+    e.preventDefault()
+    const result = await recommendations(quote, user.email)
     setResult(result.data)
   }
 

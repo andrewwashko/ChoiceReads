@@ -4,7 +4,13 @@ from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.core.serializers import serialize
+from .prompt import messages
 import json
+import os
+import openai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 """ User Authentication """
 
@@ -63,6 +69,7 @@ def current_user(request):
 
 
 # POST logic to logout user
+@api_view(["POST"])
 def sign_out(request):
   try:
     # purges authorization header (i.e. sessionid cookie) from request
@@ -73,7 +80,40 @@ def sign_out(request):
     return JsonResponse({"sign_out": False})
 
 """ Quote + Recommendation """
+@api_view(["POST"])
+def recommendations(request):
+  # import API key
+  openai.api_key = os.environ['openai_key']
 
+  quote = request.data["quote"]
+  user_message = {"role": "user", "content": quote}
+  # take the imported prompt and copy it, so it can be manipulated by user input
+  messages_without_quote = messages.copy()
+  messages_with_quote = messages_without_quote + [user_message]
+  
+  # API call
+  completion = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=messages_with_quote
+  )
+  
+  # parse the response to separate user-facing and system-facing data, and clean up whitespace
+  response_content = completion['choices'][0]['message']['content']
+  conversational_response, system_response = response_content.split("end_response")
+  
+  # user-facing data, passed to front-end
+  conversational_response = conversational_response.strip()
+  user_facing_recommendations = {
+    "data" : conversational_response
+  }
+
+  # system-facing data, inserted into db
+  # loop through the list, for each dict set variables and insert into db based on user
+  # how to get user in the scope of this function?
+
+  # print(system_data)
+  print(system_response)
+  return JsonResponse(user_facing_recommendations)
 
 """ React + Django Link """
 def index(request):

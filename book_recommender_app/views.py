@@ -6,6 +6,7 @@ from .models import *
 from django.core.serializers import serialize
 from .prompt import messages
 import json
+import requests
 import re
 import os
 import openai
@@ -99,6 +100,20 @@ def get_recommendations(messages_with_quote):
 
   return conversational_response, system_response
 
+# helper function to define mechanism of Google Books API call
+def get_book(title, author, google_books_api_key):
+    url = f"https://www.googleapis.com/books/v1/volumes?q=intitle:{title}+inauthor:{author}&key={google_books_api_key}"
+    response = requests.get(url)
+    data = response.json()
+
+    if data['totalItems'] > 0:
+      # set to first (i.e. most relevant) search result
+        book = data['items'][0]
+        return book
+    else:
+        # refactor for better error handling
+        return None
+  
 # helper function to save records in db
 def save_records(user, quote_text, system_response):
   quote = Quote.objects.create(user_id = user, quote_text = quote_text)
@@ -113,11 +128,12 @@ def save_records(user, quote_text, system_response):
           date_published=recommendation['date_published'],
           google_books_link=recommendation.get('google_books_link', '')
       )
-
+      
 @api_view(["POST"])
 def recommendations(request):
-  # import API key
+  # import API keys
   openai.api_key = os.environ['openai_key']
+  google_books_api_key = os.environ['google_books_key']
 
   # retrieve correct user from db to establish link
   user_email = request.data["user_email"]
@@ -129,7 +145,7 @@ def recommendations(request):
   messages_without_quote = messages.copy()
   messages_with_quote = messages_without_quote + [user_message]
   
-  # make API call
+  # make OpenAI API call
   conversational_response, system_response = get_recommendations(messages_with_quote)
 
   # create object to send to front-end
@@ -141,11 +157,52 @@ def recommendations(request):
   # print(system_response)
   system_data = json.loads(system_response)
 
-  # Save the records to the database
+  # make Google Books API to get a link for each recommendation
+  for recommendation in system_data:
+    title = recommendation["title"]
+    author = recommendation["author"]
+    book_data = get_book(title, author, google_books_api_key)
+
+    if book_data:
+        google_books_link = book_data["volumeInfo"]["canonicalVolumeLink"]
+        recommendation["google_books_link"] = google_books_link
+    else:
+        recommendation['google_books_link'] = "Not available on Google Books."
+          
+  # Save all info to the database
   # print(system_response)
   save_records(request.user, quote_text, system_data)
   
   return JsonResponse(user_facing_recommendations)
+
+# separate function to query db for quote and recommendation table data and send to front-end for disply in accordion
+@api_view(['GET'])
+def user_recommendation_history(request):
+  # retrieve correct user from db to establish links
+  user_email = request.GET.get("user_email")
+  user = App_User.objects.get(email=user_email)
+  quotes = Quote.objects.filter(user_id=user)
+  quote_data = []
+
+  # for all quotes submitted by that user, grab their recommendations 
+  for quote in quotes:
+    recommendations = Recommendation.objects.filter(quote_id=quote)
+    serialized_quote = serialize("json", [quote], fields=["quote_text", "created_at"])
+    serialized_recommendations = serialize("json", recommendations, fields=["title", "author", "summary", "date_published", "google_books_link"])
+    
+    # manipulate the objects to send only the necessities to the front-end
+    quote_json = json.loads(serialized_quote)[0]["fields"]
+    recommendations_json = [rec["fields"] for rec in json.loads(serialized_recommendations)]
+
+    # attach combined data points via a dict and send forward
+    quote_data.append({
+        "quote": quote_json,
+        "recommendations": recommendations_json
+    })
+        
+  # print(quote_data)
+  return JsonResponse({ "history": quote_data })
+
 
 """ React + Django Link """
 def index(request):

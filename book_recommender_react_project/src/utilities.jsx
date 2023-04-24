@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+/** User Authentication */
 export const signUp = async (email, password) => {
   let response = await axios.post('/api/sign_up/', {
     'email' : email,
@@ -21,7 +22,6 @@ export const signIn = async (email, password, setUser) => {
 
 export const currentUser = async () => {
   let response = await axios.get('/api/current_user/')
-  console.log(response.data)
   return response.data
 }
 
@@ -31,3 +31,13 @@ export const signOut = async () => {
     setUser(null)
 }
 };
+
+/** OpenAI API */
+export const recommendations = async (quote, user_email) => {
+  let response = await axios.post('/api/recommendations/', {
+    "quote" : quote,
+    "user_email" : user_email
+  })
+  // console.log(response.data)
+  return response
+}

@@ -4,7 +4,14 @@ from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.core.serializers import serialize
+from .prompt import messages
 import json
+import re
+import os
+import openai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 """ User Authentication """
 
@@ -63,6 +70,7 @@ def current_user(request):
 
 
 # POST logic to logout user
+@api_view(["POST"])
 def sign_out(request):
   try:
     # purges authorization header (i.e. sessionid cookie) from request
@@ -73,7 +81,71 @@ def sign_out(request):
     return JsonResponse({"sign_out": False})
 
 """ Quote + Recommendation """
+# helper function to define mechanism of OpenAI API call
+def get_recommendations(messages_with_quote):
+  completion = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=messages_with_quote
+  )
+  
+  # parse the response to separate user-facing and system-facing data
+  response_content = completion['choices'][0]['message']['content']
+  conversational_response, system_response = response_content.split("end_response")
 
+  # clean whitespace of user-facing data, passed to front-end
+  conversational_response = conversational_response.strip()
+  # system-facing data, inserted into db
+  system_response = system_response.strip()
+
+  return conversational_response, system_response
+
+# helper function to save records in db
+def save_records(user, quote_text, system_response):
+  quote = Quote.objects.create(user_id = user, quote_text = quote_text)
+
+  # loop through the list given by second API response, and create Recommendation records
+  for recommendation in system_response:
+      Recommendation.objects.create(
+          quote_id=quote,
+          title=recommendation['title'],
+          author=recommendation['author'],
+          summary=recommendation['summary'],
+          date_published=recommendation['date_published'],
+          google_books_link=recommendation.get('google_books_link', '')
+      )
+
+@api_view(["POST"])
+def recommendations(request):
+  # import API key
+  openai.api_key = os.environ['openai_key']
+
+  # retrieve correct user from db to establish link
+  user_email = request.data["user_email"]
+  user = App_User.objects.get(email=user_email)
+  
+  quote_text = request.data["quote"]
+  user_message = {"role": "user", "content": quote_text}
+  # take the imported prompt and copy it, so it can be manipulated by user input
+  messages_without_quote = messages.copy()
+  messages_with_quote = messages_without_quote + [user_message]
+  
+  # make API call
+  conversational_response, system_response = get_recommendations(messages_with_quote)
+
+  # create object to send to front-end
+  user_facing_recommendations = {
+    "data" : conversational_response
+  }
+  
+  # Format and deserialize the system_response to a list of dictionaries
+  # print(system_response)
+  system_data = json.loads(system_response)
+
+  # Save the records to the database
+  # print(system_response)
+  save_records(request.user, quote_text, system_data)
+  
+  return JsonResponse(user_facing_recommendations)
 
 """ React + Django Link """
 def index(request):

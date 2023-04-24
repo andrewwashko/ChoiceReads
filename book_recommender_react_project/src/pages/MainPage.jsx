@@ -1,16 +1,41 @@
-import { useContext, useEffect } from 'react';
+import React, { useContext, useState, useEffect, Fragment } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { SignOutBar } from '../components/SignOutBar'
+import { recommendations } from '../utilities';
 
 export const MainPage = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext)
+  const [result, setResult] = useState("")
+  const [quote, setQuote] = useState("")
   
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const result = await recommendations(quote, user.email)
+    setResult(result.data)
+  }
+
+  const formatRecs = (str) => {
+    return str.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+  }
+
   return (
     <>
       <SignOutBar />
       <div>
-        <h1>This will be the main page.</h1>
         <h1>User: {user?.email}</h1>
+        <form onSubmit={handleSubmit}>
+          <input 
+            placeholder="Enter quote..." 
+            value={quote}
+            onChange={(e) => setQuote(e.target.value)}
+          />
+          <p>{result && formatRecs(result.data)}</p>
+        </form>
       </div>
     </>
   )  

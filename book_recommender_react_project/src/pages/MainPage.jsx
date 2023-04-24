@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, Fragment } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { SignOutBar } from '../components/SignOutBar'
 import { recommendations } from '../utilities';
+import { ReccHistory } from '../components/ReccHistory';
 
 export const MainPage = () => {
   const { user, setUser } = useContext(UserContext)
@@ -34,9 +35,10 @@ export const MainPage = () => {
             value={quote}
             onChange={(e) => setQuote(e.target.value)}
           />
-          <p>{result && formatRecs(result.data)}</p>
         </form>
+        <p>{result && formatRecs(result.data)}</p>
       </div>
+      <ReccHistory value={{ user }}/>
     </>
   )  
 }

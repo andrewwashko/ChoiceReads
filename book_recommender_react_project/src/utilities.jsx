@@ -41,3 +41,15 @@ export const recommendations = async (quote, user_email) => {
   // console.log(response.data)
   return response
 }
+
+/** Grabbing DB data for FE */
+export const getRecHistory = async (user_email) => {
+  const response = await axios.get('/api/user_recommendation_history/', {
+    params: {
+      user_email: user_email
+    }
+  });
+  // console.log(response.data);
+  return response.data;
+};
+

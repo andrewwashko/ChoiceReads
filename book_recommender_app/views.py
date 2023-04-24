@@ -175,7 +175,34 @@ def recommendations(request):
   
   return JsonResponse(user_facing_recommendations)
 
-# separate function to query db for quote and recommendation table data and send to front-end for diaply in drop-downs
+# separate function to query db for quote and recommendation table data and send to front-end for disply in accordion
+@api_view(['GET'])
+def user_recommendation_history(request):
+  # retrieve correct user from db to establish links
+  user_email = request.GET.get("user_email")
+  user = App_User.objects.get(email=user_email)
+  quotes = Quote.objects.filter(user_id=user)
+  quote_data = []
+
+  # for all quotes submitted by that user, grab their recommendations 
+  for quote in quotes:
+    recommendations = Recommendation.objects.filter(quote_id=quote)
+    serialized_quote = serialize("json", [quote], fields=["quote_text", "created_at"])
+    serialized_recommendations = serialize("json", recommendations, fields=["title", "author", "summary", "date_published", "google_books_link"])
+    
+    # manipulate the objects to send only the necessities to the front-end
+    quote_json = json.loads(serialized_quote)[0]["fields"]
+    recommendations_json = [rec["fields"] for rec in json.loads(serialized_recommendations)]
+
+    # attach combined data points via a dict and send forward
+    quote_data.append({
+        "quote": quote_json,
+        "recommendations": recommendations_json
+    })
+        
+  # print(quote_data)
+  return JsonResponse({ "history": quote_data })
+
 
 """ React + Django Link """
 def index(request):

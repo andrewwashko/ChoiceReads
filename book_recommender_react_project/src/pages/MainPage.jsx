@@ -8,11 +8,17 @@ export const MainPage = () => {
   const { user, setUser } = useContext(UserContext)
   const [result, setResult] = useState("")
   const [quote, setQuote] = useState("")
+  const [update, setUpdate] = useState(false)
+
+  const triggerUpdate = () => {
+    setUpdate((prevUpdate) => !prevUpdate);
+  };
   
   const handleSubmit = async (e) => {
     e.preventDefault()
     const result = await recommendations(quote, user.email)
     setResult(result.data)
+    triggerUpdate()
   }
 
   const formatRecs = (str) => {
@@ -23,6 +29,7 @@ export const MainPage = () => {
       </React.Fragment>
     ));
   }
+
 
   return (
     <>
@@ -38,7 +45,7 @@ export const MainPage = () => {
         </form>
         <p>{result && formatRecs(result.data)}</p>
       </div>
-      <ReccHistory value={{ user }}/>
+      <ReccHistory user = {user} update={update} triggerUpdate={triggerUpdate}/>
     </>
   )  
 }

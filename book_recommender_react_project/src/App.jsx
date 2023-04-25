@@ -4,7 +4,7 @@ import { UserContext } from './contexts/UserContext'
 import { currentUser } from './utilities'
 import { setCSRFToken } from './components/CSRFToken'
 import { Outlet } from 'react-router-dom'
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [user, setUser] = useState(null)

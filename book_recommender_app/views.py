@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.core.serializers import serialize
+from .serializers import CustomRecommendationSerializer
 from .prompt import messages
 import json
 import requests
@@ -188,11 +189,14 @@ def user_recommendation_history(request):
   for quote in quotes:
     recommendations = Recommendation.objects.filter(quote_id=quote)
     serialized_quote = serialize("json", [quote], fields=["quote_text", "created_at"])
-    serialized_recommendations = serialize("json", recommendations, fields=["title", "author", "summary", "date_published", "google_books_link"])
+
+    # Use the custom serializer to grab pk
+    recommendation_serializer = CustomRecommendationSerializer(recommendations, many=True)
+    serialized_recommendations = json.dumps(recommendation_serializer.data)
     
     # manipulate the objects to send only the necessities to the front-end
     quote_json = json.loads(serialized_quote)[0]["fields"]
-    recommendations_json = [rec["fields"] for rec in json.loads(serialized_recommendations)]
+    recommendations_json = json.loads(serialized_recommendations)
 
     # attach combined data points via a dict and send forward
     quote_data.append({
@@ -203,6 +207,13 @@ def user_recommendation_history(request):
   # print(quote_data)
   return JsonResponse({ "history": quote_data })
 
+@api_view(["POST"])
+def delete_recommendation(request):
+  recommendation_id = request.data["recommendation_pk"]
+  recommendation = Recommendation.objects.get(id=recommendation_id)
+  recommendation.delete()
+  
+  return JsonResponse({"success": True})
 
 """ React + Django Link """
 def index(request):

@@ -9,5 +9,6 @@ urlpatterns = [
   path("api/sign_out/", views.sign_out, name="sign_out"),
   path("api/recommendations/", views.recommendations, name="recommendations"),
   path("api/user_recommendation_history/", views.user_recommendation_history, name="user_recommendation_history"),
-  path("api/delete_recommendation/", views.delete_recommendation, name="delete_recommendation")
+  path("api/delete_recommendation/", views.delete_recommendation, name="delete_recommendation"),
+  path("api/delete_quote/", views.delete_quote, name="delete_quote"),
 ]

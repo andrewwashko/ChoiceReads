@@ -1,7 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import { UserContext } from '../contexts/UserContext';
-import { getRecHistory } from '../utilities';
-import { deleteRecommendation } from '../utilities';
+import { getRecHistory, deleteRecommendation, deleteQuote } from '../utilities';
 import Accordion from 'react-bootstrap/Accordion';
 
 
@@ -12,7 +11,11 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
   const [loading, setLoading] = useState(true)
 
 
-  const handleDelete = async (recommendation_pk) => {
+  const handleDelete = async (recommendation_pk, quoteData) => {
+    if (quoteData.recommendations.length === 1) {
+      await deleteQuote(quoteData.quote.pk);
+    }
+    
     await deleteRecommendation(recommendation_pk)
     triggerUpdate()
   }
@@ -31,7 +34,7 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
 
   return (
     <Accordion defaultActiveKey="0">
-      {quotesData.map((quoteData, index) => (
+      {quotesData?.map((quoteData, index) => (
         <Accordion.Item key={index} eventKey={index.toString()}>
           <Accordion.Header>
             <h2>
@@ -63,7 +66,7 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
                   >
                     {recommendation.google_books_link}
                   </a>
-                  <button onClick={() => handleDelete(recommendation.pk)}>Delete</button>
+                  <button onClick={() => handleDelete(recommendation.pk, quoteData)}>Delete</button>
                 </p>
               </div>
             ))}

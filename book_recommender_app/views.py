@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.core.serializers import serialize
-from .serializers import CustomRecommendationSerializer
+from .serializers import *
 from .prompt import messages
 import json
 import requests
@@ -132,88 +132,114 @@ def save_records(user, quote_text, system_response):
       
 @api_view(["POST"])
 def recommendations(request):
-  # import API keys
-  openai.api_key = os.environ['openai_key']
-  google_books_api_key = os.environ['google_books_key']
+  try: 
+    # import API keys
+    openai.api_key = os.environ['openai_key']
+    google_books_api_key = os.environ['google_books_key']
 
-  # retrieve correct user from db to establish link
-  user_email = request.data["user_email"]
-  user = App_User.objects.get(email=user_email)
-  
-  quote_text = request.data["quote"]
-  user_message = {"role": "user", "content": quote_text}
-  # take the imported prompt and copy it, so it can be manipulated by user input
-  messages_without_quote = messages.copy()
-  messages_with_quote = messages_without_quote + [user_message]
-  
-  # make OpenAI API call
-  conversational_response, system_response = get_recommendations(messages_with_quote)
+    # retrieve correct user from db to establish link
+    user_email = request.data["user_email"]
+    user = App_User.objects.get(email=user_email)
+    
+    quote_text = request.data["quote"]
+    user_message = {"role": "user", "content": quote_text}
+    # take the imported prompt and copy it, so it can be manipulated by user input
+    messages_without_quote = messages.copy()
+    messages_with_quote = messages_without_quote + [user_message]
+    
+    # make OpenAI API call
+    conversational_response, system_response = get_recommendations(messages_with_quote)
 
-  # create object to send to front-end
-  user_facing_recommendations = {
-    "data" : conversational_response
-  }
-  
-  # Format and deserialize the system_response to a list of dictionaries
-  # print(system_response)
-  system_data = json.loads(system_response)
+    # create object to send to front-end
+    user_facing_recommendations = {
+      "data" : conversational_response
+    }
+    
+    # Format and deserialize the system_response to a list of dictionaries
+    # print(system_response)
+    system_data = json.loads(system_response)
 
-  # make Google Books API to get a link for each recommendation
-  for recommendation in system_data:
-    title = recommendation["title"]
-    author = recommendation["author"]
-    book_data = get_book(title, author, google_books_api_key)
+    # make Google Books API to get a link for each recommendation
+    for recommendation in system_data:
+      title = recommendation["title"]
+      author = recommendation["author"]
+      book_data = get_book(title, author, google_books_api_key)
 
-    if book_data:
-        google_books_link = book_data["volumeInfo"]["canonicalVolumeLink"]
-        recommendation["google_books_link"] = google_books_link
-    else:
-        recommendation['google_books_link'] = "Not available on Google Books."
-          
-  # Save all info to the database
-  # print(system_response)
-  save_records(request.user, quote_text, system_data)
-  
-  return JsonResponse(user_facing_recommendations)
+      if book_data:
+          google_books_link = book_data["volumeInfo"]["canonicalVolumeLink"]
+          recommendation["google_books_link"] = google_books_link
+      else:
+          recommendation['google_books_link'] = "Not available on Google Books."
+            
+    # Save all info to the database
+    # print(system_response)
+    save_records(request.user, quote_text, system_data)
+    
+    return JsonResponse(user_facing_recommendations)
+  except Exception as e:
+    print(e)
+    return JsonResponse({ "success": False })
 
 # separate function to query db for quote and recommendation table data and send to front-end for disply in accordion
 @api_view(['GET'])
 def user_recommendation_history(request):
-  # retrieve correct user from db to establish links
-  user_email = request.GET.get("user_email")
-  user = App_User.objects.get(email=user_email)
-  quotes = Quote.objects.filter(user_id=user)
-  quote_data = []
+  try: 
+    # retrieve correct user from db to establish links
+    user_email = request.GET.get("user_email")
+    user = App_User.objects.get(email=user_email)
+    quotes = Quote.objects.filter(user_id=user)
+    quote_data = []
 
-  # for all quotes submitted by that user, grab their recommendations 
-  for quote in quotes:
-    recommendations = Recommendation.objects.filter(quote_id=quote)
-    serialized_quote = serialize("json", [quote], fields=["quote_text", "created_at"])
+    # for all quotes submitted by that user, grab their recommendations 
+    for quote in quotes:
+      recommendations = Recommendation.objects.filter(quote_id=quote)
+      
+      # Use the custom serializers to grab pk
+      quote_serializer = CustomQuoteSerializer(quote)
+      serialized_quote = json.dumps(quote_serializer.data)
 
-    # Use the custom serializer to grab pk
-    recommendation_serializer = CustomRecommendationSerializer(recommendations, many=True)
-    serialized_recommendations = json.dumps(recommendation_serializer.data)
-    
-    # manipulate the objects to send only the necessities to the front-end
-    quote_json = json.loads(serialized_quote)[0]["fields"]
-    recommendations_json = json.loads(serialized_recommendations)
+      recommendation_serializer = CustomRecommendationSerializer(recommendations, many=True)
+      serialized_recommendations = json.dumps(recommendation_serializer.data)
+      
+      # manipulate the objects to send only the necessities to the front-end
+      quote_json = json.loads(serialized_quote)
+      recommendations_json = json.loads(serialized_recommendations)
 
-    # attach combined data points via a dict and send forward
-    quote_data.append({
-        "quote": quote_json,
-        "recommendations": recommendations_json
-    })
-        
-  # print(quote_data)
-  return JsonResponse({ "history": quote_data })
+      # attach combined data points via a dict and send forward
+      quote_data.append({
+          "quote": quote_json,
+          "recommendations": recommendations_json
+      })
+          
+    # print(quote_data)
+    return JsonResponse({ "history": quote_data })
+  except Exception as e:
+    print(e)
+    return JsonResponse({ "success": False })
 
 @api_view(["POST"])
 def delete_recommendation(request):
-  recommendation_id = request.data["recommendation_pk"]
-  recommendation = Recommendation.objects.get(id=recommendation_id)
-  recommendation.delete()
+  try:
+    recommendation_id = request.data["recommendation_pk"]
+    recommendation = Recommendation.objects.get(id=recommendation_id)
+    recommendation.delete()
+    
+    return JsonResponse({"success": True})
+  except Exception as e:
+    print(e)
+    return JsonResponse({ "success": False })  
   
-  return JsonResponse({"success": True})
+@api_view(["POST"])
+def delete_quote(request):
+  try:
+    quote_id = request.data["quote_pk"]
+    quote = Quote.objects.get(id=quote_id)
+    quote.delete()
+    
+    return JsonResponse({"success": True})
+  except Exception as e:
+    print(e)
+    return JsonResponse({ "success": False }) 
 
 """ React + Django Link """
 def index(request):

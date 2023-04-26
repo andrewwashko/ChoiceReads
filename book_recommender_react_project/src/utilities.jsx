@@ -55,7 +55,7 @@ export const getRecHistory = async (user_email) => {
         "user_email": user_email
       }
     });
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   }
   catch (error) {
@@ -69,9 +69,16 @@ export const deleteRecommendation = async (recommendation_pk) => {
   const response = await axios.post('api/delete_recommendation/', {
     "recommendation_pk" : recommendation_pk
   })
-  console.log(response.data)
+  // console.log(response.data)
   return response.data;
 }
 
+/** Deleting a quote */
+export const deleteQuote = async (quote_pk) => {
+  const response = await axios.post('api/delete_quote/', {
+    "quote_pk": quote_pk,
+  });
+  return response.data
+};
 
 

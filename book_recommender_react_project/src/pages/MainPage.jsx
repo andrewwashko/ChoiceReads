@@ -22,12 +22,14 @@ export const MainPage = () => {
   }
 
   const formatRecs = (str) => {
-    return str.split('\n').map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        <br />
-      </React.Fragment>
-    ));
+    if (str) {
+      return str.split('\n').map((line, index) => (
+        <React.Fragment key={index}>
+          {line}
+          <br />
+        </React.Fragment>
+      ));
+    }
   }
 
 

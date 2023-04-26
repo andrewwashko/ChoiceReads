@@ -32,12 +32,10 @@ export const MainPage = () => {
     }
   }
 
-
   return (
     <>
       <SignOutBar />
-      <div>
-        <h1>User: {user?.email}</h1>
+      <div className='quote_input'>
         <form onSubmit={handleSubmit}>
           <input 
             placeholder="Enter quote..." 
@@ -45,7 +43,9 @@ export const MainPage = () => {
             onChange={(e) => setQuote(e.target.value)}
           />
         </form>
-        <p>{result && formatRecs(result.data)}</p>
+        <div className='rec_display'>
+          <p>{result && formatRecs(result.data)}</p>
+        </div>
       </div>
       <ReccHistory user = {user} update={update} triggerUpdate={triggerUpdate}/>
     </>

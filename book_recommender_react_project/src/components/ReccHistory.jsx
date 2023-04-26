@@ -8,8 +8,6 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
   // user is passed down as a prop, because even though useContext was working as expected (i.e. correct recs were shown) it was giving 500 errors. User as a prop does the same without the errors.
   // const { user } = useContext(UserContext)
   const [quotesData, setQuotesData] = useState([])
-  const [loading, setLoading] = useState(true)
-
 
   const handleDelete = async (recommendation_pk, quoteData) => {
     if (quoteData.recommendations.length === 1) {
@@ -32,17 +30,25 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
     fetch_rec_history()
   }, [user, update])
 
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
+  }
+
   return (
+    <div className='accordion_container'>
     <Accordion defaultActiveKey="0">
       {quotesData?.map((quoteData, index) => (
         <Accordion.Item key={index} eventKey={index.toString()}>
           <Accordion.Header>
-            <h2>
-             {quoteData.quote.quote_text} 
-            </h2>
+            <div className='quote_display'>
+            <h4>
+             "{quoteData.quote.quote_text}" 
+            </h4>
             <p>
-              {quoteData.quote.created_at}
+              Created on: {formatDate(quoteData.quote.created_at)}
             </p>
+            </div>
           </Accordion.Header>
           <Accordion.Body>
             {quoteData.recommendations.map((recommendation, recIndex) => (
@@ -74,6 +80,7 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
         </Accordion.Item>
       ))}
     </Accordion>
+    </div>
   );
   
 }

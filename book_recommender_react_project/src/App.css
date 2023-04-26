@@ -15,6 +15,83 @@
   background-color: white;
 }
 
-.rec_box {
-  border: 2px solid black;
+.app_root {
+  font-family: 'Martel', serif;
+  background-image: url("../public/background.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-color: #22202C;
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  position: absolute;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel Decorative', cursive;
+  color: #BA3D00;
+}
+
+.quote_input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.quote_input input {
+  width: 80%;
+  padding: 1rem;
+  font-family: 'Martel', serif;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.rec_display {
+  width: 80%;
+  background-color: #f8f1e6;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rec_display p {
+  font-family: 'Cormorant Infant', serif;
+}
+
+.quote_display {
+  display: flex;
+  flex-direction: column;
+}
+.accordion_container {
+  width: 75%;
+  margin: 0 auto;
+}
+
+.Accordion.Header h2 {
+  font-family: 'Cormorant Infant', serif;
+  color: #5d3300;
+}
+
+.accordion-header .accordion-button {
+  background-color: #f8f1e6;
+}
+
+.accordion-body {
+  background-color: #f8f1e6;
+}
+
+.Accordion.Body p {
+  font-family: 'Martel', serif;
+  color: #5d3300;
+}
+
+.rec_box {
+  border: 1px solid #5d3300;
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+

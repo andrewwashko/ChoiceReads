@@ -5,14 +5,23 @@ export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    const result = await signUp(email, password);
+    if (result == false) {
+      setEmail("");
+      setPassword("");
+      alert("Invalid credentials");
+    } else {
+      setEmail("");
+      setPassword("");
+      alert("Valid signup. Proceed to sign in.");
+    }
+  };
+
   return (
     <form
-      onSubmit={(e) => [
-        e.preventDefault(),
-        signUp(email, password),
-        setEmail(""),
-        setPassword(""),
-      ]}
+      onSubmit={handleSignUp}
       style={{ display: "flex", flexDirection: "column" }}
     >
       <input
@@ -26,7 +35,7 @@ export const SignUp = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <input type="submit" value="Sign Up" />
+      <button style={{ alignSelf: "center", width:"60%"}} class="btn btn-secondary" type="submit">Sign Up</button>
     </form>
   );
 };

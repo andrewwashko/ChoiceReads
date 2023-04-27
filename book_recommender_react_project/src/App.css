@@ -1,11 +1,11 @@
-#auth_container {
+.auth_container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-#auth_box {
+.auth_box {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,7 +43,7 @@ h4, h5, h6 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 6rem 0;
+  margin: 1rem 0;
 }
 
 .quote_input input {

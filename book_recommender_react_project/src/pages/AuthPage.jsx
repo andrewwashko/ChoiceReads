@@ -12,12 +12,12 @@ export const AuthPage = () => {
   };
 
   return (
-    <div id='auth_container'>
-      <div id='auth_box'>
+    <div className='auth_container'>
+      <div className='auth_box'>
         {showSignIn ? <SignIn /> : <SignUp />}
         <span style={{ marginTop: "10px" }}>
           {showSignIn ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button class="btn btn-light" onClick={toggleComponent}>
+          <button class="btn btn-secondary" onClick={toggleComponent}>
             {showSignIn ? "Sign Up" : "Sign In"}
           </button>
         </span>

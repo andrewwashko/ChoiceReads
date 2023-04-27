@@ -92,6 +92,7 @@ def get_recommendations(messages_with_quote):
   
   # parse the response to separate user-facing and system-facing data
   response_content = completion['choices'][0]['message']['content']
+  print(response_content)
   conversational_response, system_response = response_content.split("end_response")
 
   # clean whitespace of user-facing data, passed to front-end
@@ -146,6 +147,7 @@ def recommendations(request):
     # take the imported prompt and copy it, so it can be manipulated by user input
     messages_without_quote = messages.copy()
     messages_with_quote = messages_without_quote + [user_message]
+    print(messages_with_quote)
     
     # make OpenAI API call
     conversational_response, system_response = get_recommendations(messages_with_quote)
@@ -177,7 +179,7 @@ def recommendations(request):
     
     return JsonResponse(user_facing_recommendations)
   except Exception as e:
-    print(e)
+    print("OpenAI API error:", e)
     return JsonResponse({ "success": False })
 
 # separate function to query db for quote and recommendation table data and send to front-end for disply in accordion
@@ -187,7 +189,8 @@ def user_recommendation_history(request):
     # retrieve correct user from db to establish links
     user_email = request.GET.get("user_email")
     user = App_User.objects.get(email=user_email)
-    quotes = Quote.objects.filter(user_id=user)
+    # sort by created_at to display most recent quotes to the user at the front-end
+    quotes = Quote.objects.filter(user_id=user).order_by('-created_at')
     quote_data = []
 
     # for all quotes submitted by that user, grab their recommendations 
@@ -214,7 +217,7 @@ def user_recommendation_history(request):
     # print(quote_data)
     return JsonResponse({ "history": quote_data })
   except Exception as e:
-    print(e)
+    print("User History error:", e)
     return JsonResponse({ "success": False })
 
 @api_view(["POST"])
@@ -227,7 +230,7 @@ def delete_recommendation(request):
     return JsonResponse({"success": True})
   except Exception as e:
     print(e)
-    return JsonResponse({ "success": False })  
+    return JsonResponse({"success": False})  
   
 @api_view(["POST"])
 def delete_quote(request):

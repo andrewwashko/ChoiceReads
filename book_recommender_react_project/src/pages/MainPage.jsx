@@ -3,6 +3,7 @@ import { UserContext } from '../contexts/UserContext';
 import { SignOutBar } from '../components/SignOutBar'
 import { recommendations } from '../utilities';
 import { ReccHistory } from '../components/ReccHistory';
+import Typewriter from 'typewriter-effect';
 
 export const MainPage = () => {
   const { user, setUser } = useContext(UserContext)
@@ -23,14 +24,9 @@ export const MainPage = () => {
 
   const formatRecs = (str) => {
     if (str) {
-      return str.split('\n').map((line, index) => (
-        <React.Fragment key={index}>
-          {line}
-          <br />
-        </React.Fragment>
-      ));
+      return str.split('\n').join('<br/>');
     }
-  }
+  };
 
   return (
     <>
@@ -43,9 +39,21 @@ export const MainPage = () => {
             onChange={(e) => setQuote(e.target.value)}
           />
         </form>
+        {result && (
         <div className='rec_display'>
-          <p>{result && formatRecs(result.data)}</p>
+          <Typewriter
+            options={{
+              strings: [formatRecs(result.data)],
+              autoStart: true,
+              loop: true,
+              delay: 10,
+              cursor: "",
+              html: false,
+              deleteSpeed: 1000000000,
+            }}
+          />
         </div>
+      )}
       </div>
       <ReccHistory user = {user} update={update} triggerUpdate={triggerUpdate}/>
     </>

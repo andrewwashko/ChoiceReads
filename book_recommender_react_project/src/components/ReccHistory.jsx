@@ -37,11 +37,11 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
 
   return (
     <div className='accordion_container'>
-    <Accordion defaultActiveKey="0">
+    <Accordion defaultActiveKey="">
       {quotesData?.map((quoteData, index) => (
         <Accordion.Item key={index} eventKey={index.toString()}>
           <Accordion.Header>
-            <div className='quote_display'>
+            <div className='accordion_header_content'>
             <h4>
              "{quoteData.quote.quote_text}" 
             </h4>
@@ -53,12 +53,12 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
           <Accordion.Body>
             {quoteData.recommendations.map((recommendation, recIndex) => (
               <div key={recIndex} className="rec_box mb-3">
-                <h5>{recommendation.title}</h5>
+                <div className="rec_box_header">
+                  <h5>{recommendation.title} ({recommendation.date_published})</h5>
+                  <button onClick={() => handleDelete(recommendation.pk, quoteData)}>Delete</button>
+                </div>
                 <p>
                   <strong>Author:</strong> {recommendation.author}
-                </p>
-                <p>
-                  <strong>Date Published:</strong> {recommendation.date_published}
                 </p>
                 <p>
                   <strong>Summary:</strong> {recommendation.summary}
@@ -72,7 +72,6 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
                   >
                     {recommendation.google_books_link}
                   </a>
-                  <button onClick={() => handleDelete(recommendation.pk, quoteData)}>Delete</button>
                 </p>
               </div>
             ))}

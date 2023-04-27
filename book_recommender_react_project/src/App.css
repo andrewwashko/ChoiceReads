@@ -41,11 +41,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .quote_input input {
-  width: 80%;
+  width: 125vh;
   padding: 1rem;
   font-family: 'Martel', serif;
   font-size: 1rem;
   margin-bottom: 1rem;
+}
+
+.spinner_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.custom_spinner {
+  color: goldenrod;
 }
 
 .rec_display {
@@ -61,10 +72,18 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Cormorant Infant', serif;
 }
 
-.quote_display {
+.accordion_header_content {
   display: flex;
   flex-direction: column;
+  margin-top: -10px;
+  margin-bottom: -25px;
+
 }
+
+.accordion_header_content p {
+  margin-top: -5px;
+}
+
 .accordion_container {
   width: 75%;
   margin: 0 auto;
@@ -88,10 +107,19 @@ h1, h2, h3, h4, h5, h6 {
   color: #5d3300;
 }
 
+.rec_box_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .rec_box {
   border: 1px solid #5d3300;
   padding: 1rem;
   border-radius: 5px;
 }
 
-
+.rec_box p {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.75;
+}

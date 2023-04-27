@@ -15,7 +15,7 @@ export const SignOutBar = () => {
 
   return (
     <div>
-      <button onClick={handleSignOut}>Sign out</button>
+      <button class="btn btn-light" onClick={handleSignOut}>Sign out</button>
     </div>
   );
 };

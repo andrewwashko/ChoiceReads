@@ -26,7 +26,7 @@ export const SignUp = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <input type="submit" value="sign Up" />
+      <input type="submit" value="Sign Up" />
     </form>
   );
 };

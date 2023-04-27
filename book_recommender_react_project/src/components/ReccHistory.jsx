@@ -55,7 +55,7 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
               <div key={recIndex} className="rec_box mb-3">
                 <div className="rec_box_header">
                   <h5>{recommendation.title} ({recommendation.date_published})</h5>
-                  <button onClick={() => handleDelete(recommendation.pk, quoteData)}>Delete</button>
+                  <button class="btn btn-light" onClick={() => handleDelete(recommendation.pk, quoteData)}>Delete</button>
                 </div>
                 <p>
                   <strong>Author:</strong> {recommendation.author}

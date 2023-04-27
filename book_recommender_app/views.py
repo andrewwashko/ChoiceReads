@@ -180,7 +180,7 @@ def recommendations(request):
     return JsonResponse(user_facing_recommendations)
   except Exception as e:
     print("OpenAI API error:", e)
-    return JsonResponse({ "success": False })
+    return JsonResponse({ "success": False, "error": "An error occurred. Please try resubmitting your quote." })
 
 # separate function to query db for quote and recommendation table data and send to front-end for disply in accordion
 @api_view(['GET'])

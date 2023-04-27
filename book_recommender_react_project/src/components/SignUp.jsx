@@ -16,12 +16,12 @@ export const SignUp = () => {
       style={{ display: "flex", flexDirection: "column" }}
     >
       <input
-        placeholder="email"
+        placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
-        placeholder="password"
+        placeholder="Password"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}

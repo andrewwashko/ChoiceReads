@@ -34,7 +34,6 @@ export const MainPage = () => {
 
   return (
     <>
-      <SignOutBar />
       <div className='quote_input'>
         <form onSubmit={handleSubmit}>
           <input

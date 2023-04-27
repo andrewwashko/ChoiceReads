@@ -160,8 +160,9 @@ h4, h5, h6 {
   align-items: center;
 }
 
-.logo {
-  margin-right: 15px;
+.signoutbar-container {
+  position: absolute;
+  left: 0;
 }
 
 .banner-text {
@@ -169,3 +170,15 @@ h4, h5, h6 {
   font-size: 36px;
   color: goldenrod;
 }
+
+.btn-outline-secondary {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+

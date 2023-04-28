@@ -1,13 +1,12 @@
 import React, { useContext, useState, useEffect, Fragment } from 'react';
 import { UserContext } from '../contexts/UserContext';
-import { SignOutBar } from '../components/SignOutBar';
 import { recommendations } from '../utilities';
 import { ReccHistory } from '../components/ReccHistory';
 import Typewriter from 'typewriter-effect';
 import Spinner from 'react-bootstrap/Spinner';
 
 export const MainPage = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [result, setResult] = useState('');
   const [quote, setQuote] = useState('');
   const [update, setUpdate] = useState(false);
@@ -37,7 +36,7 @@ export const MainPage = () => {
       <div className='quote_input'>
         <form onSubmit={handleSubmit}>
           <input
-            placeholder="Enter quote..."
+            placeholder="Enter a quote here and get three matching book recommendations."
             value={quote}
             onChange={(e) => setQuote(e.target.value)}
           />

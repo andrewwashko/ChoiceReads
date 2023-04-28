@@ -1,12 +1,10 @@
-import { useContext, useState, useEffect } from 'react';
-import { UserContext } from '../contexts/UserContext';
+import { useState, useEffect } from 'react';
 import { getRecHistory, deleteRecommendation, deleteQuote } from '../utilities';
 import Accordion from 'react-bootstrap/Accordion';
 
 
 export const ReccHistory = ({ user, update, triggerUpdate }) => {
   // user is passed down as a prop, because even though useContext was working as expected (i.e. correct recs were shown) it was giving 500 errors. User as a prop does the same without the errors.
-  // const { user } = useContext(UserContext)
   const [quotesData, setQuotesData] = useState([])
 
   const handleDelete = async (recommendation_pk, quoteData) => {
@@ -20,11 +18,9 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
   
   useEffect(() => {
     const fetch_rec_history = async () => {
-      // will not run before user is passed down as context
       if (user) {
         const data = await getRecHistory(user.email)
         setQuotesData(data.history)
-        // setLoading(false)
       }
     }
     fetch_rec_history()
@@ -55,7 +51,7 @@ export const ReccHistory = ({ user, update, triggerUpdate }) => {
               <div key={recIndex} className="rec_box mb-3">
                 <div className="rec_box_header">
                   <h5>{recommendation.title} ({recommendation.date_published})</h5>
-                  <button class="btn btn-light" onClick={() => handleDelete(recommendation.pk, quoteData)}>Delete</button>
+                  <button className="btn btn-light" onClick={() => handleDelete(recommendation.pk, quoteData)}>Delete</button>
                 </div>
                 <p>
                   <strong>Author:</strong> {recommendation.author}

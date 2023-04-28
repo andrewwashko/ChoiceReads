@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signUp } from "../utilities";
 
 export const SignUp = () => {
@@ -8,10 +8,11 @@ export const SignUp = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     const result = await signUp(email, password);
-    if (result == false) {
+    console.log(result)
+    if (result === false) {
       setEmail("");
       setPassword("");
-      alert("Invalid credentials");
+      alert("Invalid email.");
     } else {
       setEmail("");
       setPassword("");

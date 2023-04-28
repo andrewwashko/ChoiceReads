@@ -1,17 +1,19 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponse
-from rest_framework.decorators import api_view
-from django.contrib.auth import authenticate, login, logout
-from .models import *
-from django.core.serializers import serialize
-from .serializers import *
-from .prompt import messages
 import json
-import requests
-import re
 import os
-import openai
+import re
+import requests
 from dotenv import load_dotenv
+import openai
+from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import ValidationError
+from django.core.serializers import serialize
+from django.core.validators import validate_email
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from rest_framework.decorators import api_view
+from .models import *
+from .prompt import messages
+from .serializers import *
 
 load_dotenv()
 
@@ -28,14 +30,22 @@ def sign_up(request):
       super_user = request.data['super']
   if 'staff' in request.data:
       staff = request.data['staff']
+
+  # Validate email format
   try:
-    # create_user() auto-hashes password
-    new_user = App_User.objects.create_user(username = email, email = email, password = password, is_superuser = super_user, is_staff = staff)
-    new_user.save()
-    return JsonResponse({"success": f"${email} was created."})
+      validate_email(email)
+  except ValidationError as ve:
+      print(ve)
+      return JsonResponse({"success": False, "error": "Invalid email format"})
+
+  try:
+      # create_user() auto-hashes password
+      new_user = App_User.objects.create_user(username=email, email=email, password=password, is_superuser=super_user, is_staff=staff)
+      new_user.save()
+      return JsonResponse({"success": f"{email} was created."})
   except Exception as e:
-    print(e)
-    return JsonResponse({"success": False})
+      print(e)
+      return JsonResponse({"success": False})
 
 # POST logic to check db and authenticate user
 @api_view(["POST"])
@@ -92,7 +102,6 @@ def get_recommendations(messages_with_quote):
   
   # parse the response to separate user-facing and system-facing data
   response_content = completion['choices'][0]['message']['content']
-  print(response_content)
   conversational_response, system_response = response_content.split("end_response")
 
   # clean whitespace of user-facing data, passed to front-end
@@ -147,7 +156,6 @@ def recommendations(request):
     # take the imported prompt and copy it, so it can be manipulated by user input
     messages_without_quote = messages.copy()
     messages_with_quote = messages_without_quote + [user_message]
-    print(messages_with_quote)
     
     # make OpenAI API call
     conversational_response, system_response = get_recommendations(messages_with_quote)

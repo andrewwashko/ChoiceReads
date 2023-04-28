@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user, setUser } = useContext(UserContext)
+  const { setUser } = useContext(UserContext)
   const navigate = useNavigate()
 
   // handles invalid credentials 

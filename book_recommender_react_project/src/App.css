@@ -1,20 +1,189 @@
-#auth_container {
+.auth_container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-#auth_box {
+.auth_box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
-  border: 1px solid black;
+  padding: 1rem;
   border-radius: 5px;
-  background-color: white;
+  background-color: #f8f1e678;
+  backdrop-filter: blur(10px)
 }
 
-.rec_box {
-  border: 2px solid black;
+.app_root {
+  font-family: 'Martel', serif;
+  color: #3e3131;
+  background-image: url("../public/background.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-color: #22202C;
+  width: 100%;
+  min-height: 100%;
+  height: auto;
+  position: absolute;
 }
+
+h1, h2, h3 {
+  font-family: 'Cinzel Decorative', cursive;
+  color: #22202C;
+}
+
+h4, h5, h6 {
+  font-family: 'Cormorant Infant', serif;
+  color: #22202C;
+}
+
+.quote_input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 4rem 0;
+}
+
+.quote_input input {
+  width: 55vw;
+  padding: 1rem;
+  font-family: 'Martel', serif;
+  color: #3e3131;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f8f1e678;
+  backdrop-filter: blur(10px)
+}
+
+.quote_input input::placeholder {
+  font-style: italic;
+  color: black;
+  opacity: 0.5
+}
+
+.rec_display {
+  width: 80%;
+  background-color: #f8f1e678;
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rec_display p {
+  font-family: 'Cormorant Infant', serif;
+}
+
+.spinner_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.custom_spinner {
+  color: goldenrod;
+}
+
+.accordion {
+  margin-bottom: 100px;
+}
+
+.accordion_header_content {
+  display: flex;
+  flex-direction: column;
+  margin-top: -10px;
+  margin-bottom: -25px;
+  
+}
+
+.accordion_header_content p {
+  margin-top: -5px;
+  font-family: 'Cormorant Infant', serif;
+  color: #5d3300;
+}
+
+.accordion_container {
+  width: 55vw;
+  margin: 0 auto;
+}
+
+.Accordion.Body p {
+  font-family: 'Martel', serif;
+}
+
+.rec_box_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rec_box {
+  border: 1px solid #5d3300;
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.rec_box p {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.75;
+}
+
+.accordion, .accordion-button, .accordion-button:not(.collapsed), .accordian-item {
+  --bs-accordion-active-bg: transparent !important;
+  --bs-border-color: rgba(248, 241, 230, 0.2) !important;
+  --bs-accordion-bg: rgba(248, 241, 230, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.accordion-body {
+  background-color: rgba(248, 241, 230, 0.2);
+}
+
+.accordion * {
+  color: #3e3131;
+}
+
+.btn-light {
+  --bs-btn-color: #3e3131;
+  --bs-btn-bg: #f8f1e678;
+}
+
+.banner {
+  width: 100%;
+  padding: 10px 0;
+  background-color: rgba(248, 241, 230, 0.2);  
+  backdrop-filter: blur(10px)
+}
+
+.banner-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signoutbar-container {
+  position: absolute;
+  left: 0;
+}
+
+.banner-text {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 36px;
+  color: goldenrod;
+}
+
+.btn-outline-secondary {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+

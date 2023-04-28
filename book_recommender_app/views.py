@@ -1,17 +1,19 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponse
-from rest_framework.decorators import api_view
-from django.contrib.auth import authenticate, login, logout
-from .models import *
-from django.core.serializers import serialize
-from .serializers import *
-from .prompt import messages
 import json
-import requests
-import re
 import os
-import openai
+import re
+import requests
 from dotenv import load_dotenv
+import openai
+from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import ValidationError
+from django.core.serializers import serialize
+from django.core.validators import validate_email
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from rest_framework.decorators import api_view
+from .models import *
+from .prompt import messages
+from .serializers import *
 
 load_dotenv()
 
@@ -28,14 +30,22 @@ def sign_up(request):
       super_user = request.data['super']
   if 'staff' in request.data:
       staff = request.data['staff']
+
+  # Validate email format
   try:
-    # create_user() auto-hashes password
-    new_user = App_User.objects.create_user(username = email, email = email, password = password, is_superuser = super_user, is_staff = staff)
-    new_user.save()
-    return JsonResponse({"success": f"${email} was created."})
+      validate_email(email)
+  except ValidationError as ve:
+      print(ve)
+      return JsonResponse({"success": False, "error": "Invalid email format"})
+
+  try:
+      # create_user() auto-hashes password
+      new_user = App_User.objects.create_user(username=email, email=email, password=password, is_superuser=super_user, is_staff=staff)
+      new_user.save()
+      return JsonResponse({"success": f"{email} was created."})
   except Exception as e:
-    print(e)
-    return JsonResponse({"success": False})
+      print(e)
+      return JsonResponse({"success": False})
 
 # POST logic to check db and authenticate user
 @api_view(["POST"])
@@ -177,8 +187,8 @@ def recommendations(request):
     
     return JsonResponse(user_facing_recommendations)
   except Exception as e:
-    print(e)
-    return JsonResponse({ "success": False })
+    print("OpenAI API error:", e)
+    return JsonResponse({ "success": False, "error": "An error occurred. Please try resubmitting your quote." })
 
 # separate function to query db for quote and recommendation table data and send to front-end for disply in accordion
 @api_view(['GET'])
@@ -187,7 +197,8 @@ def user_recommendation_history(request):
     # retrieve correct user from db to establish links
     user_email = request.GET.get("user_email")
     user = App_User.objects.get(email=user_email)
-    quotes = Quote.objects.filter(user_id=user)
+    # sort by created_at to display most recent quotes to the user at the front-end
+    quotes = Quote.objects.filter(user_id=user).order_by('-created_at')
     quote_data = []
 
     # for all quotes submitted by that user, grab their recommendations 
@@ -214,7 +225,7 @@ def user_recommendation_history(request):
     # print(quote_data)
     return JsonResponse({ "history": quote_data })
   except Exception as e:
-    print(e)
+    print("User History error:", e)
     return JsonResponse({ "success": False })
 
 @api_view(["POST"])
@@ -227,7 +238,7 @@ def delete_recommendation(request):
     return JsonResponse({"success": True})
   except Exception as e:
     print(e)
-    return JsonResponse({ "success": False })  
+    return JsonResponse({"success": False})  
   
 @api_view(["POST"])
 def delete_quote(request):

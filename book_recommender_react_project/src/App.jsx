@@ -4,6 +4,7 @@ import { UserContext } from './contexts/UserContext'
 import { currentUser } from './utilities'
 import { setCSRFToken } from './components/CSRFToken'
 import { Outlet } from 'react-router-dom'
+import { Banner } from './components/Banner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
   
   return (
     <div className="app_root">
+      <Banner />
       <UserContext.Provider value={{ user, setUser }}>
         <Outlet />
       </UserContext.Provider>

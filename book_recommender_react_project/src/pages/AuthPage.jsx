@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react'
-import { useContext } from 'react';
-import { UserContext } from '../contexts/UserContext';
+import { useState } from 'react'
 import { SignIn } from '../components/SignIn'
 import { SignUp } from '../components/SignUp'
 
@@ -12,12 +10,12 @@ export const AuthPage = () => {
   };
 
   return (
-    <div id='auth_container'>
-      <div id='auth_box'>
+    <div className='auth_container'>
+      <div className='auth_box'>
         {showSignIn ? <SignIn /> : <SignUp />}
         <span style={{ marginTop: "10px" }}>
           {showSignIn ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button onClick={toggleComponent}>
+          <button class="btn btn-secondary" onClick={toggleComponent}>
             {showSignIn ? "Sign Up" : "Sign In"}
           </button>
         </span>

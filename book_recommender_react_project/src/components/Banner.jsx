@@ -7,7 +7,7 @@ export const Banner = () => {
   return (
     <div className="banner">
       <div className="banner-content">
-        {location.pathname !== "/#" && (
+        {location.pathname !== "/" && (
           <div className="signoutbar-container">
             <SignOutBar />
           </div>

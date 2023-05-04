@@ -67,7 +67,7 @@ h4, h5, h6 {
   width: 80%;
   background-color: #f8f1e678;
   backdrop-filter: blur(10px);
-  padding: 20px;
+  padding: 16px;
   margin: 20px 0;
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

@@ -102,7 +102,12 @@ def get_recommendations(messages_with_quote):
   
   # parse the response to separate user-facing and system-facing data
   response_content = completion['choices'][0]['message']['content']
-  conversational_response, system_response = response_content.split("end_response")
+  
+  # If only one value is returned (i.e. user input was invalid), return the response_content directly
+  try:
+    conversational_response, system_response = response_content.split("end_response")
+  except ValueError:
+    return response_content, None
 
   # clean whitespace of user-facing data, passed to front-end
   conversational_response = conversational_response.strip()
@@ -159,6 +164,10 @@ def recommendations(request):
     
     # make OpenAI API call
     conversational_response, system_response = get_recommendations(messages_with_quote)
+
+    # If system_response is None, return an error message to the front-end
+    if system_response is None:
+      return JsonResponse({ "data": "An error occurred. Revise your quote or provide additional context to it." })
 
     # create object to send to front-end
     user_facing_recommendations = {
